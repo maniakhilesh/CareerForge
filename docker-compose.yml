@@ -1,0 +1,37 @@
+services:
+
+  postgres:
+    image: postgres:17
+
+    container_name: careerforge-db
+
+    environment:
+      POSTGRES_DB: careerforge
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+
+    container_name: careerforge-backend
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      DB_URL: jdbc:postgresql://careerforge-db:5432/careerforge
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: CareerForgeDockerSecret
+
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
