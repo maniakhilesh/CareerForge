@@ -286,7 +286,7 @@ jwt.secret=${JWT_SECRET}
 ### Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/maniakhilesh/CareerForge.git
 cd careerforge-backend
 ```
 
