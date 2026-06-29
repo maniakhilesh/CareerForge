@@ -15,6 +15,7 @@ import com.careerforge.application.repository.ApplicationRepository;
 import com.careerforge.common.exception.ApplicationNotFoundException;
 import com.careerforge.common.exception.DuplicateApplicationException;
 import com.careerforge.common.exception.OpportunityNotFoundException;
+import com.careerforge.common.exception.UnauthorizedApplicationAccessException;
 import com.careerforge.common.exception.UserNotFoundException;
 import com.careerforge.opportunity.entity.Opportunity;
 import com.careerforge.opportunity.repository.OpportunityRepository;
@@ -105,11 +106,8 @@ public ApplicationResponse updateStatus(
                     .orElseThrow(ApplicationNotFoundException::new);
 
     if (!application.getUser().getId().equals(userId)) {
-        throw new RuntimeException(
-                "You cannot modify another user's application"
-        );
-    }
-
+    throw new UnauthorizedApplicationAccessException();
+}
     application.setStatus(
             request.status()
     );

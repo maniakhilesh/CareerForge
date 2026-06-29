@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.careerforge.opportunity.dto.CreateOpportunityRequest;
+import com.careerforge.opportunity.dto.OpportunityResponse;
 import com.careerforge.opportunity.entity.Opportunity;
+import com.careerforge.opportunity.mapper.OpportunityMapper;
 import com.careerforge.opportunity.service.OpportunityService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 public class OpportunityController {
 
     private final OpportunityService service;
+    private final OpportunityMapper mapper;
 
     @Operation(
             summary = "Create Opportunity",
@@ -48,7 +50,7 @@ public class OpportunityController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping
-    public ResponseEntity<Opportunity> create(
+    public ResponseEntity<OpportunityResponse> create(
             @Valid @RequestBody CreateOpportunityRequest request
     ) {
 
@@ -56,61 +58,53 @@ public class OpportunityController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(opportunity);
+                .body(mapper.toResponse(opportunity));
     }
 
     @Operation(
             summary = "Search & Filter Opportunities",
-            description = "Returns opportunities with optional filters."
+            description = "Returns opportunities with optional filtering and pagination."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Results retrieved successfully")
-    })
+    @ApiResponse(responseCode = "200", description = "Opportunities retrieved successfully"),
+    @ApiResponse(responseCode = "400", description = "Invalid request parameters")
+})
     @GetMapping
-    public ResponseEntity<Page<Opportunity>> findAll(
+    public ResponseEntity<Page<OpportunityResponse>> search(
 
-            @RequestParam(required = false)
-            String title,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String company,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String employmentType,
 
-            @RequestParam(required = false)
-            String company,
-
-            @RequestParam(required = false)
-            String location,
-
-            @RequestParam(required = false)
-            String employmentType,
-
-            @PageableDefault(size = 10)
             Pageable pageable
     ) {
 
-        return ResponseEntity.ok(
+        Page<OpportunityResponse> response =
                 service.search(
                         title,
                         company,
                         location,
                         employmentType,
                         pageable
-                )
-        );
+                ).map(mapper::toResponse);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
             summary = "Get Opportunity",
             description = "Returns an opportunity by its ID."
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Opportunity found"),
-            @ApiResponse(responseCode = "404", description = "Opportunity not found")
-    })
     @GetMapping("/{id}")
-    public ResponseEntity<Opportunity> findById(
+    public ResponseEntity<OpportunityResponse> findById(
             @PathVariable UUID id
     ) {
 
         return ResponseEntity.ok(
-                service.findById(id)
+                mapper.toResponse(
+                        service.findById(id)
+                )
         );
     }
 
@@ -118,10 +112,6 @@ public class OpportunityController {
             summary = "Delete Opportunity",
             description = "Deletes an opportunity."
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Opportunity deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Opportunity not found")
-    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable UUID id

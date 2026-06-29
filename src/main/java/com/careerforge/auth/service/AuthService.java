@@ -9,6 +9,7 @@ import com.careerforge.auth.dto.RegisterRequest;
 import com.careerforge.auth.security.JwtService;
 import com.careerforge.common.exception.EmailAlreadyExistsException;
 import com.careerforge.common.exception.InvalidCredentialsException;
+import com.careerforge.user.entity.Role;
 import com.careerforge.user.entity.User;
 import com.careerforge.user.repository.UserRepository;
 
@@ -21,6 +22,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+
     public void register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.email())) {
@@ -33,6 +35,7 @@ public class AuthService {
                 .passwordHash(
                         passwordEncoder.encode(request.password())
                 )
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
@@ -40,25 +43,25 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
 
-    User user = userRepository
-            .findByEmail(request.email())
-            .orElseThrow(InvalidCredentialsException::new);
+        User user = userRepository
+                .findByEmail(request.email())
+                .orElseThrow(InvalidCredentialsException::new);
 
-    boolean passwordMatches =
-            passwordEncoder.matches(
-                    request.password(),
-                    user.getPasswordHash()
-            );
+        boolean passwordMatches =
+                passwordEncoder.matches(
+                        request.password(),
+                        user.getPasswordHash()
+                );
 
-    if (!passwordMatches) {
-        throw new InvalidCredentialsException();
+        if (!passwordMatches) {
+            throw new InvalidCredentialsException();
+        }
+
+        String token =
+                jwtService.generateToken(
+                        user.getEmail()
+                );
+
+        return new AuthResponse(token);
     }
-
-    String token =
-            jwtService.generateToken(
-                    user.getEmail()
-            );
-
-    return new AuthResponse(token);
-}
 }

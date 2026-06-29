@@ -1,6 +1,7 @@
 package com.careerforge.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -43,18 +44,37 @@ public class SecurityConfig {
                                 SessionCreationPolicy.STATELESS
                         )
                 )
-               .authorizeHttpRequests(auth -> auth
+.authorizeHttpRequests(auth -> auth
 
-    .requestMatchers(
-    "/api/auth/**",
-    "/swagger-ui/**",
-    "/v3/api-docs/**",
-    "/actuator/**"
-)
-.permitAll()
+        // Public APIs
+        .requestMatchers(
+                "/api/auth/**",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/actuator/**"
+        ).permitAll()
 
-    .anyRequest()
-    .authenticated()
+        // Public Opportunity APIs
+        .requestMatchers(HttpMethod.GET, "/api/opportunities/**")
+        .permitAll()
+
+        // Admin-only Opportunity Management
+        .requestMatchers(HttpMethod.POST, "/api/opportunities/**")
+        .hasRole("ADMIN")
+
+        .requestMatchers(HttpMethod.DELETE, "/api/opportunities/**")
+        .hasRole("ADMIN")
+
+        // Authenticated Users
+        .requestMatchers("/api/applications/**")
+        .authenticated()
+
+        .requestMatchers("/api/dashboard/**")
+        .authenticated()
+
+        // Everything else
+        .anyRequest()
+        .authenticated()
 )
                 .addFilterBefore(
                         jwtFilter,
