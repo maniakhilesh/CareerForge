@@ -36,4 +36,4 @@ logging:
     org.hibernate.SQL: DEBUG
 
 jwt:
-  secret: ${JWT_SECRET:CareerForgeDevSecretKey}
+  secret: ${JWT_SECRET:CareerForgeSuperSecureJwtSecretKey2026ForDevelopmentOnly123456789}

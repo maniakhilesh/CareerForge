@@ -1,6 +1,11 @@
 # 🚀 CareerForge
 
-> A production-oriented career management platform that helps users track job opportunities, manage applications, monitor interview progress, and analyze job search performance through secure REST APIs.
+### AI-Powered Career Management Platform
+
+> **Enterprise-grade Spring Boot backend demonstrating secure authentication, scalable REST APIs, Dockerized deployment, Flyway database migrations, automated testing, and GitHub Actions CI/CD.**
+
+**Java 21 • Spring Boot • PostgreSQL • JWT • Docker • Flyway • GitHub Actions • Swagger**
+
 
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green)
@@ -27,6 +32,15 @@ CareerForge solves this problem by providing a secure backend platform that enab
 The project is designed using modern backend engineering practices commonly used in enterprise applications.
 
 ---
+## ⭐ Engineering Highlights
+
+- ✅ Enterprise Layered Architecture
+- ✅ JWT Authentication & Spring Security
+- ✅ PostgreSQL + Flyway Database Versioning
+- ✅ Dockerized Deployment
+- ✅ Automated CI/CD with GitHub Actions
+- ✅ Integration Testing with Testcontainers
+- ✅ REST API Documentation with Swagger
 
 ## ✨ Key Features
 
@@ -340,8 +354,12 @@ This project demonstrates:
 - AI-Powered Job Matching
 - Email Notifications
 - Docker Deployment
-- CI/CD Pipeline
 - Cloud Deployment (AWS)
+Role-Based Authorization (RBAC)
+Redis Caching
+Search & Filtering
+AWS Deployment
+Monitoring & Logging
 
 ---
 
